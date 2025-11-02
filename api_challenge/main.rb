@@ -4,7 +4,7 @@ API_BASE_URL = 'http://challenge.z2o.cloud/'
 NICKNAME = 'Inuneko_Mizuki'
 
 client = ApiClient.new(API_BASE_URL)
-@learned_offset = 0.020 # 初期値を調整
+@learned_offset = 0.05 # 初期値を調整
 @diff_history = []
 response_data = client.post_challenge(NICKNAME)
 
@@ -29,7 +29,7 @@ loop do
     target_time = Time.now.to_f + sleep_duration - @learned_offset
 
     # 粗い待機
-    rough_wait = target_time - Time.now.to_f - 0.002
+    rough_wait = target_time - Time.now.to_f - 0.0015
     sleep(rough_wait) if rough_wait > 0
 
     # 精密なbusy wait
@@ -40,7 +40,7 @@ loop do
 
   if response_data['diff']
     @diff_history << response_data['diff']
-    @diff_history.shift if @diff_history.size > 5
+    @diff_history.shift if @diff_history.size > 3
 
     # 重み付き移動平均
     if @diff_history.size >= 3
