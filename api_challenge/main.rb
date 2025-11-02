@@ -33,7 +33,7 @@ loop do
 
   if sleep_duration > 0
     puts "\nWaiting for #{sleep_duration.round(3)} seconds..."
-    sleep(sleep_duration)
+    sleep(sleep_duration - 0.1)
   end
 
   puts "Sending PUT request for challenge ID: #{challenge_id}"
