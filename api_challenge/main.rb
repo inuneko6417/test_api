@@ -4,7 +4,7 @@ API_BASE_URL = 'http://challenge.z2o.cloud/'
 NICKNAME = 'Inuneko_Mizuki'
 
 client = ApiClient.new(API_BASE_URL)
-@learned_offset = 0.05 # 初期値を調整
+@learned_offset = 0.03 # 初期値を調整
 @diff_history = []
 response_data = client.post_challenge(NICKNAME)
 
