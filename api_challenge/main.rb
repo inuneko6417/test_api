@@ -4,7 +4,7 @@ API_BASE_URL = 'http://challenge.z2o.cloud/'
 NICKNAME = 'Inuneko_Mizuki'
 
 client = ApiClient.new(API_BASE_URL)
-@learned_offset = 0.03 # 初期値を調整
+@learned_offset = 0.03
 @diff_history = []
 response_data = client.post_challenge(NICKNAME)
 
@@ -27,12 +27,9 @@ loop do
 
   if sleep_duration > 0
     target_time = Time.now.to_f + sleep_duration - @learned_offset
-
-    # 粗い待機
     rough_wait = target_time - Time.now.to_f - 0.0015
     sleep(rough_wait) if rough_wait > 0
 
-    # 精密なbusy wait
     while Time.now.to_f < target_time; end
   end
 
@@ -40,10 +37,9 @@ loop do
 
   if response_data['diff']
     @diff_history << response_data['diff']
-    @diff_history.shift if @diff_history.size > 3
+    @diff_history.shift if @diff_history.size > 10
 
-    # 重み付き移動平均
-    if @diff_history.size >= 3
+    if @diff_history.size >= 10
       weights = (1..@diff_history.size).to_a
       weighted_avg = @diff_history.zip(weights).sum { |d, w| d * w } / weights.sum.to_f
       @learned_offset = weighted_avg / 1000.0
@@ -51,7 +47,6 @@ loop do
       @learned_offset = (@diff_history.sum / @diff_history.size.to_f) / 1000.0
     end
 
-    # 異常値対策
     @learned_offset = [[@learned_offset, 0.005].max, 0.050].min
 
     puts "Diff: #{response_data['diff']}ms, Offset: #{(@learned_offset * 1000).round(2)}ms, Total: #{response_data['total_diff']}ms"
